@@ -1,0 +1,209 @@
+
+Table school_profile {
+  school_id int [pk]
+  school_name varchar
+  address varchar
+  city varchar
+  state varchar
+  zip varchar
+  phone varchar
+  founded_year int
+}
+
+Table students {
+  student_id int [pk]
+  first_name varchar
+  last_name varchar
+  birthdate date
+  gender varchar
+  enrollment_date date
+  withdraw_date date
+}
+
+Table guardians {
+  guardian_id int [pk]
+  first_name varchar
+  last_name varchar
+  phone varchar
+  email varchar
+  guardian_type_id int [ref: > guardian_types.guardian_type_id]
+}
+
+Table guardian_types {
+  guardian_type_id int [pk]
+  name varchar
+}
+
+Table student_guardians {
+  student_id int [ref: > students.student_id]
+  guardian_id int [ref: > guardians.guardian_id]
+  primary_contact boolean
+  relationship varchar
+}
+
+Table teachers {
+  teacher_id int [pk]
+  first_name varchar
+  last_name varchar
+  birthdate date
+  hire_date date
+  department_id int [ref: > departments.department_id]
+  is_floater boolean
+}
+
+Table teacher_subjects {
+  teacher_id int [ref: > teachers.teacher_id]
+  subject_id int [ref: > subjects.subject_id]
+
+  indexes {
+    (teacher_id, subject_id) [pk]
+  }
+}
+
+Table classrooms {
+  classroom_id int [pk]
+  room_number varchar
+  capacity int
+  floor int
+  building varchar
+  is_special_use boolean
+}
+
+Table periods {
+  period_id int [pk]
+  start_time time
+  end_time time
+  name varchar
+}
+
+Table academic_years {
+  academic_year_id int [pk]
+  start_date date
+  end_date date
+  name varchar
+}
+
+Table terms {
+  term_id int [pk]
+  academic_year_id int [ref: > academic_years.academic_year_id]
+  term_number int
+  start_date date
+  end_date date
+}
+
+Table classes {
+  class_id int [pk]
+  class_name varchar
+  grade_level_id int [ref: > grade_levels.grade_level_id]
+  subject_id int [ref: > subjects.subject_id]
+  teacher_id int [ref: > teachers.teacher_id]
+  classroom_id int [ref: > classrooms.classroom_id]
+  term_id int [ref: > terms.term_id]
+}
+
+Table class_schedule {
+  schedule_id int [pk]
+  class_id int [ref: > classes.class_id]
+  weekday varchar
+  period_id int [ref: > periods.period_id]
+}
+
+Table enrollments {
+  enrollment_id int [pk]
+  student_id int [ref: > students.student_id]
+  class_id int [ref: > classes.class_id]
+  academic_year_id int [ref: > academic_years.academic_year_id]
+}
+
+Table attendance_statuses {
+  attendance_status_id int [pk]
+  label varchar
+}
+
+Table attendance {
+  attendance_id int [pk]
+  student_id int [ref: > students.student_id]
+  attend_date date [ref: > school_calendar.calendar_date]
+  status_id int [ref: > attendance_statuses.attendance_status_id]
+  notes text
+}
+
+Table discipline_records {
+  discipline_record_id int [pk]
+  student_id int [ref: > students.student_id]
+  incident_date date
+  incident text
+  outcome text
+}
+
+Table medical_records {
+  medical_record_id int [pk]
+  student_id int [ref: > students.student_id]
+  condition varchar
+  notes text
+  start_date date
+}
+
+Table fee_types {
+  fee_type_id int [pk]
+  label varchar
+  default_amount float
+}
+
+Table payments {
+  payment_id int [pk]
+  guardian_id int [ref: > guardians.guardian_id]
+  fee_type_id int [ref: > fee_types.fee_type_id]
+  amount float
+  pay_date date
+}
+
+Table school_calendar {
+  calendar_date date [pk]
+  is_school_day boolean
+  is_holiday boolean
+  holiday_name varchar
+  comment text
+}
+
+Table events {
+  event_id int [pk]
+  calendar_date date [ref: > school_calendar.calendar_date]
+  event_name varchar
+  event_type varchar
+  location varchar
+  description text
+}
+
+Table departments {
+  department_id int [pk]
+  name varchar
+}
+
+Table subjects {
+  subject_id int [pk]
+  department_id int [ref: > departments.department_id]
+  subject_name varchar
+}
+
+Table grade_levels {
+  grade_level_id int [pk]
+  level_name varchar
+  level_order int
+}
+
+Table student_grade_history {
+  student_id int [ref: > students.student_id]
+  grade_level_id int [ref: > grade_levels.grade_level_id]
+  academic_year_id int [ref: > academic_years.academic_year_id]
+  score float
+}
+
+Table grades {
+  grade_id int [pk]
+  student_id int [ref: > students.student_id]
+  class_id int [ref: > classes.class_id]
+  term_id int [ref: > terms.term_id]
+  grade_value float
+  letter_grade varchar
+}
